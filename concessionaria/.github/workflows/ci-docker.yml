@@ -1,0 +1,27 @@
+name: CI - Spring Boot com Docker
+
+on:
+  push:
+    branches:
+      - docker-build
+
+jobs:
+  test-and-build:
+    runs-on: ubuntu-latest
+
+    # Rodando o job inteiro dentro de um container Maven + JDK
+    container:
+      image: maven:3.9.6-eclipse-temurin-21
+
+    steps:
+      - name: Checkout do projeto
+        uses: actions/checkout@v4
+
+      - name: Instalar dependências + rodar testes
+        run: mvn -q test
+
+      - name: Build do jar
+        run: mvn -q package -DskipTests
+
+      - name: Build Docker image
+        run: docker build -t springboot-app:latest .
